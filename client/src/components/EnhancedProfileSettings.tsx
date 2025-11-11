@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
+import { soundManager } from '../utils/sounds';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 
@@ -519,6 +520,41 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
 
             {activeTab === 'audio' && (
               <div className="space-y-6 animate-fadeIn">
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl">
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                    <span>🔔</span> Звуки уведомлений
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { key: 'messageReceived', label: 'Входящее сообщение', icon: '📨', test: () => soundManager.playMessageReceived() },
+                      { key: 'messageSent', label: 'Отправка сообщения', icon: '📤', test: () => soundManager.playMessageSent() },
+                      { key: 'reactions', label: 'Реакции', icon: '❤️', test: () => soundManager.playReaction() },
+                      { key: 'notifications', label: 'Уведомления', icon: '🔔', test: () => soundManager.playNotification() }
+                    ].map((sound) => (
+                      <div key={sound.key} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{sound.icon}</span>
+                          <span className="font-semibold text-gray-900 dark:text-white">{sound.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={sound.test}
+                            className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                          >
+                            Тест
+                          </button>
+                          <input
+                            type="checkbox"
+                            checked={notificationSounds[sound.key as keyof typeof notificationSounds]}
+                            onChange={(e) => setNotificationSounds({ ...notificationSounds, [sound.key]: e.target.checked })}
+                            className="w-6 h-6 rounded"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl">
                   <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
                     <span>🎵</span> Сохраненные аудио ({savedAudio.length})
