@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { VoiceRecorder } from './VoiceRecorder';
 import { FileUploader } from './FileUploader';
+import { soundManager } from '../utils/sounds';
 
 interface MessageInputProps {
   onSendMessage: (content: string, type?: string) => void;
@@ -18,6 +19,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFil
     if (message.trim()) {
       onSendMessage(message.trim());
       setMessage('');
+      soundManager.playMessageSent();
     }
   };
 

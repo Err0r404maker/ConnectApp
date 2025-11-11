@@ -106,13 +106,18 @@ export const CreateGroupChat: React.FC<CreateGroupChatProps> = ({ isOpen, onClos
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Создать групповой чат</h2>
 
-        <input
-          type="text"
-          value={chatName}
-          onChange={(e) => setChatName(e.target.value)}
-          placeholder="Название чата"
-          className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white mb-4"
-        />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Название группы
+          </label>
+          <input
+            type="text"
+            value={chatName}
+            onChange={(e) => setChatName(e.target.value)}
+            placeholder="Введите название группы"
+            className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
           Выбрано: {selected.size} из {friends.length}
