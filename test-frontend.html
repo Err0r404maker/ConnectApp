@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест API Мессенджера</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 3px; }
+        .result { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Тест API Корпоративного Мессенджера</h1>
+        
+        <div class="section">
+            <h2>1. Проверка сервера</h2>
+            <button onclick="checkHealth()">Проверить Health</button>
+            <button onclick="getCSRF()">Получить CSRF токен</button>
+            <div id="health-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>2. Регистрация</h2>
+            <input type="email" id="reg-email" placeholder="Email" value="test@example.com">
+            <input type="text" id="reg-username" placeholder="Username" value="testuser">
+            <input type="text" id="reg-firstName" placeholder="Имя" value="Тест">
+            <input type="text" id="reg-lastName" placeholder="Фамилия" value="Пользователь">
+            <input type="password" id="reg-password" placeholder="Пароль" value="password123">
+            <select id="reg-role">
+                <option value="STUDENT">Студент</option>
+                <option value="TEACHER">Преподаватель</option>
+            </select>
+            <button onclick="register()">Зарегистрироваться</button>
+            <div id="register-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>3. Вход</h2>
+            <input type="email" id="login-email" placeholder="Email" value="test@example.com">
+            <input type="password" id="login-password" placeholder="Пароль" value="password123">
+            <button onclick="login()">Войти</button>
+            <div id="login-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>4. Чаты</h2>
+            <button onclick="getChats()">Получить чаты</button>
+            <button onclick="createChat()">Создать тестовый чат</button>
+            <div id="chats-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>5. Сообщения</h2>
+            <input type="text" id="message-content" placeholder="Текст сообщения" value="Привет! Это тестовое сообщение.">
+            <button onclick="sendMessage()">Отправить сообщение</button>
+            <div id="messages-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let csrfToken = '';
+        let accessToken = '';
+        let currentChatId = '';
+        
+        const API_URL = 'http://localhost:3001/api';
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = JSON.stringify(data, null, 2);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+                
+                if (csrfToken && options.method !== 'GET') {
+                    headers['X-CSRF-Token'] = csrfToken;
+                }
+                
+                if (accessToken) {
+                    headers['Authorization'] = `Bearer ${accessToken}`;
+                }
+
+                const response = await fetch(url, {
+                    ...options,
+                    headers
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function checkHealth() {
+            try {
+                const data = await makeRequest('http://localhost:3001/health');
+                showResult('health-result', { status: 'Сервер работает!', ...data });
+            } catch (error) {
+                showResult('health-result', { error: error.message }, true);
+            }
+        }
+
+        async function getCSRF() {
+            try {
+                const data = await makeRequest(`${API_URL}/csrf-token`);
+                csrfToken = data.csrfToken;
+                showResult('health-result', { message: 'CSRF токен получен', token: csrfToken.substring(0, 20) + '...' });
+            } catch (error) {
+                showResult('health-result', { error: error.message }, true);
+            }
+        }
+
+        async function register() {
+            try {
+                if (!csrfToken) await getCSRF();
+                
+                const data = await makeRequest(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('reg-email').value,
+                        username: document.getElementById('reg-username').value,
+                        firstName: document.getElementById('reg-firstName').value,
+                        lastName: document.getElementById('reg-lastName').value,
+                        password: document.getElementById('reg-password').value,
+                        role: document.getElementById('reg-role').value
+                    })
+                });
+                
+                accessToken = data.accessToken;
+                showResult('register-result', { message: 'Регистрация успешна!', user: data.user });
+            } catch (error) {
+                showResult('register-result', { error: error.message }, true);
+            }
+        }
+
+        async function login() {
+            try {
+                if (!csrfToken) await getCSRF();
+                
+                const data = await makeRequest(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('login-email').value,
+                        password: document.getElementById('login-password').value
+                    })
+                });
+                
+                accessToken = data.accessToken;
+                showResult('login-result', { message: 'Вход успешен!', user: data.user });
+            } catch (error) {
+                showResult('login-result', { error: error.message }, true);
+            }
+        }
+
+        async function getChats() {
+            try {
+                if (!accessToken) {
+                    throw new Error('Сначала войдите в систему');
+                }
+                
+                const data = await makeRequest(`${API_URL}/chats`);
+                showResult('chats-result', { message: 'Чаты загружены', chats: data });
+            } catch (error) {
+                showResult('chats-result', { error: error.message }, true);
+            }
+        }
+
+        async function createChat() {
+            try {
+                if (!accessToken) {
+                    throw new Error('Сначала войдите в систему');
+                }
+                
+                if (!csrfToken) await getCSRF();
+                
+                const data = await makeRequest(`${API_URL}/chats`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'Тестовый чат',
+                        type: 'GROUP',
+                        description: 'Чат для тестирования функциональности'
+                    })
+                });
+                
+                currentChatId = data.id;
+                showResult('chats-result', { message: 'Чат создан!', chat: data });
+            } catch (error) {
+                showResult('chats-result', { error: error.message }, true);
+            }
+        }
+
+        async function sendMessage() {
+            try {
+                if (!accessToken) {
+                    throw new Error('Сначала войдите в систему');
+                }
+                
+                if (!currentChatId) {
+                    throw new Error('Сначала создайте чат');
+                }
+                
+                if (!csrfToken) await getCSRF();
+                
+                const data = await makeRequest(`${API_URL}/messages`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        content: document.getElementById('message-content').value,
+                        chatId: currentChatId,
+                        type: 'TEXT'
+                    })
+                });
+                
+                showResult('messages-result', { message: 'Сообщение отправлено!', messageData: data });
+            } catch (error) {
+                showResult('messages-result', { error: error.message }, true);
+            }
+        }
+
+        // Автоматически проверяем сервер при загрузке
+        window.onload = () => {
+            checkHealth();
+        };
+    </script>
+</body>
+</html>

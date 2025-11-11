@@ -1,0 +1,28 @@
+-- Таблица приглашений в чаты
+CREATE TABLE IF NOT EXISTS chat_invites (
+  id TEXT PRIMARY KEY,
+  chatId TEXT NOT NULL,
+  fromUserId TEXT NOT NULL,
+  toUserId TEXT NOT NULL,
+  status TEXT DEFAULT 'PENDING', -- PENDING, ACCEPTED, REJECTED
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chatId) REFERENCES chats(id) ON DELETE CASCADE,
+  FOREIGN KEY (fromUserId) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (toUserId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблица друзей
+CREATE TABLE IF NOT EXISTS friends (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  friendId TEXT NOT NULL,
+  status TEXT DEFAULT 'PENDING', -- PENDING, ACCEPTED, REJECTED
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (friendId) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(userId, friendId)
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_invites_toUserId ON chat_invites(toUserId);
+CREATE INDEX IF NOT EXISTS idx_friends_userId ON friends(userId);
+CREATE INDEX IF NOT EXISTS idx_friends_friendId ON friends(friendId);

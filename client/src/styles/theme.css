@@ -1,0 +1,79 @@
+/* ЕДИНАЯ ЦВЕТОВАЯ ПАЛИТРА - ТЕМНО-СИНИЙ/ФИОЛЕТОВЫЙ */
+
+:root {
+  /* Основные цвета */
+  --primary-dark: #1a1f3a;
+  --primary-blue: #2d3561;
+  --primary-purple: #5b4b8a;
+  --accent-purple: #7c6bad;
+  --accent-light: #9d8ec4;
+  
+  /* Градиенты */
+  --gradient-main: linear-gradient(135deg, #1a1f3a 0%, #2d3561 50%, #5b4b8a 100%);
+  --gradient-sidebar: linear-gradient(180deg, #1a1f3a 0%, #2d3561 100%);
+  --gradient-button: linear-gradient(135deg, #5b4b8a 0%, #7c6bad 100%);
+  
+  /* Текст */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  /* Фоны */
+  --bg-card: rgba(93, 75, 138, 0.15);
+  --bg-hover: rgba(124, 107, 173, 0.2);
+  --bg-active: rgba(124, 107, 173, 0.3);
+  
+  /* Размеры иконок */
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+}
+
+/* Применяем темную тему ко всему */
+body {
+  background: var(--gradient-main);
+  color: var(--text-primary);
+}
+
+/* Убираем все светлые/серые цвета */
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.bg-gray-200,
+.bg-neutral-50 {
+  background: var(--bg-card) !important;
+}
+
+.text-gray-900,
+.text-gray-800,
+.text-gray-700,
+.text-neutral-900 {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-600,
+.text-gray-500,
+.text-neutral-600 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-400,
+.text-neutral-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Иконки - уменьшаем размер */
+svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+button svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.avatar-tg svg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}

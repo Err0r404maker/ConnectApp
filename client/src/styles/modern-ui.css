@@ -1,0 +1,359 @@
+/* 🎨 СОВРЕМЕННЫЙ UI - ПРЕМИУМ ДИЗАЙН */
+
+/* Глобальные улучшения */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Все кнопки */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* Инпуты - СОВРЕМЕННЫЙ СТИЛЬ */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  border-radius: 18px !important;
+  padding: 14px 20px !important;
+  border: 2px solid rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), 0 8px 24px rgba(102, 126, 234, 0.15) !important;
+  transform: translateY(-2px) !important;
+  background: white !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background: rgba(30, 27, 75, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  background: rgba(30, 27, 75, 0.8) !important;
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.1), 0 8px 24px rgba(167, 139, 250, 0.2) !important;
+}
+
+/* Карточки сообщений */
+.message-bubble,
+[class*="message"] {
+  border-radius: 20px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.message-bubble:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Модальные окна */
+[class*="modal"],
+[class*="Modal"] {
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25) !important;
+  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Overlay для модальных окон */
+[class*="overlay"],
+[class*="backdrop"] {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Dropdown меню */
+[class*="dropdown"],
+[class*="menu"] {
+  border-radius: 20px !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden !important;
+  animation: dropdownSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Элементы dropdown */
+[class*="dropdown"] > *,
+[class*="menu"] > * {
+  padding: 12px 18px !important;
+  transition: all 0.2s !important;
+  border-radius: 12px !important;
+  margin: 4px !important;
+}
+
+[class*="dropdown"] > *:hover,
+[class*="menu"] > *:hover {
+  background: rgba(102, 126, 234, 0.1) !important;
+  transform: translateX(4px) !important;
+}
+
+/* Бейджи */
+[class*="badge"],
+span[class*="bg-red-500"],
+span[class*="bg-green-500"],
+span[class*="bg-blue-500"] {
+  border-radius: 14px !important;
+  padding: 4px 10px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Тултипы */
+[class*="tooltip"],
+[role="tooltip"] {
+  border-radius: 14px !important;
+  padding: 10px 16px !important;
+  background: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* Прогресс бары */
+[class*="progress"] {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  height: 10px !important;
+}
+
+[class*="progress"] > * {
+  border-radius: 16px !important;
+  background: linear-gradient(90deg, #667eea, #764ba2) !important;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Чекбоксы */
+input[type="checkbox"] {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 8px !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  position: relative !important;
+}
+
+input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  border-color: #667eea !important;
+  transform: scale(1.1) !important;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+}
+
+/* Радио кнопки */
+input[type="radio"] {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  position: relative !important;
+}
+
+input[type="radio"]:checked {
+  border-color: #667eea !important;
+  transform: scale(1.1) !important;
+}
+
+input[type="radio"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+}
+
+/* Разделители */
+hr,
+[class*="divider"] {
+  border: none !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent) !important;
+  margin: 20px 0 !important;
+}
+
+.dark hr,
+.dark [class*="divider"] {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent) !important;
+}
+
+/* Скелетон загрузки */
+[class*="skeleton"],
+[class*="loading"] {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%) !important;
+  background-size: 200% 100% !important;
+  animation: skeleton-loading 1.5s ease-in-out infinite !important;
+  border-radius: 12px !important;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.dark [class*="skeleton"],
+.dark [class*="loading"] {
+  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Спиннеры */
+[class*="spinner"],
+[class*="loading-spinner"] {
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Улучшенные тени */
+.shadow-sm { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; }
+.shadow { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important; }
+.shadow-md { box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important; }
+.shadow-lg { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important; }
+.shadow-xl { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important; }
+.shadow-2xl { box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25) !important; }
+
+/* Hover эффекты для карточек */
+[class*="card"],
+[class*="panel"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[class*="card"]:hover,
+[class*="panel"]:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Анимация появления */
+.fade-in {
+  animation: fadeIn 0.4s ease-out !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Плавная прокрутка везде */
+* {
+  scroll-behavior: smooth !important;
+}
+
+/* Улучшенный фокус для доступности */
+*:focus-visible {
+  outline: 3px solid rgba(102, 126, 234, 0.5) !important;
+  outline-offset: 2px !important;
+  border-radius: 8px !important;
+}
+
+/* Отключаем outline для мыши */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Градиентные кнопки */
+.btn-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Стеклянный эффект для всех glass элементов */
+[class*="glass"] {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест мессенджера</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 400px; margin: 0 auto; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тест мессенджера</h1>
+        
+        <h3>Регистрация</h3>
+        <input type="email" id="email" placeholder="Email" value="test@test.com">
+        <input type="text" id="username" placeholder="Username" value="testuser">
+        <input type="text" id="firstName" placeholder="Имя" value="Тест">
+        <input type="text" id="lastName" placeholder="Фамилия" value="Пользователь">
+        <input type="password" id="password" placeholder="Пароль" value="123456">
+        <button onclick="register()">Зарегистрироваться</button>
+        
+        <h3>Вход</h3>
+        <input type="email" id="loginEmail" placeholder="Email" value="test@test.com">
+        <input type="password" id="loginPassword" placeholder="Пароль" value="123456">
+        <button onclick="login()">Войти</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3003/api';
+        
+        async function register() {
+            const data = {
+                email: document.getElementById('email').value,
+                username: document.getElementById('username').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                password: document.getElementById('password').value,
+                role: 'STUDENT'
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `<h4>Регистрация:</h4><pre>${JSON.stringify(result, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<h4>Ошибка:</h4><pre>${error.message}</pre>`;
+            }
+        }
+        
+        async function login() {
+            const data = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `<h4>Вход:</h4><pre>${JSON.stringify(result, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<h4>Ошибка:</h4><pre>${error.message}</pre>`;
+            }
+        }
+        
+        // Проверяем сервер при загрузке
+        fetch(`${API_URL}/../health`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = 
+                    `<h4>Сервер работает:</h4><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            })
+            .catch(e => {
+                document.getElementById('result').innerHTML = 
+                    `<h4>Сервер не отвечает:</h4><pre>${e.message}</pre>`;
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "@college/messenger",
+  "version": "1.0.0",
+  "description": "Корпоративный мессенджер для колледжа",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "setup": "npm run setup:server && npm run setup:client",
+    "setup:server": "cd server && npm install",
+    "setup:client": "cd client && npm install",
+    "security:check": "node check-security.js",
+    "security:audit": "npm audit && cd server && npm audit && cd ../client && npm audit",
+    "security:fix": "npm audit fix && cd server && npm audit fix && cd ../client && npm audit fix",
+    "prestart": "npm run security:check"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "sqlite3": "^5.1.7"
+  }
+}
