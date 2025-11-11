@@ -241,7 +241,9 @@ const ImprovedChatPage: React.FC = memo(() => {
           replyTo: message.replyTo,
           status: 'delivered'
         });
-        if (message.senderId !== user?.id) {
+        if (message.senderId === user?.id) {
+          soundManager.playMessageSent();
+        } else {
           soundManager.playMessageReceived();
         }
         if (message.chatId === activeChat && message.senderId !== user?.id) {
@@ -332,7 +334,6 @@ const ImprovedChatPage: React.FC = memo(() => {
       setNewMessage('');
       setReplyTo(null);
       socketService.sendMessage(messageData);
-      soundManager.playMessageSent();
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
   }, [newMessage, activeChat, replyTo]);
