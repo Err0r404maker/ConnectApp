@@ -105,18 +105,15 @@ const CreateChatModal: React.FC<CreateChatModalProps> = ({
               <label className="block text-sm font-bold text-neutral-700 mb-4">
                 Username группы (опционально)
               </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">@</span>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                  className="input-elegant text-base font-medium pl-8"
-                  placeholder="my_group_chat"
-                  disabled={isSubmitting}
-                  maxLength={32}
-                />
-              </div>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                className="input-elegant text-base font-medium"
+                placeholder="my_group_chat (без @)"
+                disabled={isSubmitting}
+                maxLength={32}
+              />
               <p className="text-xs text-gray-500 mt-2">
                 🔗 По этому username можно будет найти группу. Только буквы, цифры и _
               </p>
