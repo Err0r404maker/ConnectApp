@@ -213,14 +213,12 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
         settings.setNotificationSound(key as any, value);
       });
       
-      // Применяем тему и отправляем событие для синхронизации
-      localStorage.setItem('themeMode', theme);
-      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
+      // Не меняем тему автоматически - только при явном сохранении
       
       setMessage('✅ Сохранено успешно!');
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (error) {
       console.error('Ошибка сохранения:', error);
       setMessage('Ошибка сохранения');
