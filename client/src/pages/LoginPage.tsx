@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setEmail('admin');
+                    setEmail('admin@example.com');
                     setPassword('admin');
                   }}
                   className="px-3 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:shadow-md bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300"
@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setEmail('demo');
+                    setEmail('demo@example.com');
                     setPassword('demo');
                   }}
                   className="px-3 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:shadow-md bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300"
@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Email адрес
+                  Email или Username
                 </label>
                 <input
                   id="email"
