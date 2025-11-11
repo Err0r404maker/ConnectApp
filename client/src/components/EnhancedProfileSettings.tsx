@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
+import Cropper from 'react-easy-crop';
+import type { Area } from 'react-easy-crop';
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +21,12 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState(user?.avatar || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
   
   const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(settings.theme);
   const [colorScheme, setColorScheme] = useState(settings.colorScheme);
@@ -115,9 +123,67 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
     
     const reader = new FileReader();
     reader.onload = () => {
-      setAvatar(reader.result as string);
+      setImageSrc(reader.result as string);
+      setShowCropper(true);
     };
     reader.readAsDataURL(file);
+  };
+  
+  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+  
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', (error) => reject(error));
+      image.src = url;
+    });
+  
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<string> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) throw new Error('No 2d context');
+    
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+    
+    return canvas.toDataURL('image/jpeg');
+  };
+  
+  const handleCropSave = async () => {
+    if (!imageSrc || !croppedAreaPixels) return;
+    
+    try {
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+      setAvatar(croppedImage);
+      setShowCropper(false);
+      setImageSrc(null);
+    } catch (e) {
+      console.error('Error cropping image:', e);
+    }
+  };
+  
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setImageSrc(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   };
   
   const handleSave = async () => {
@@ -237,6 +303,53 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
 
   return (
     <>
+      {showCropper && imageSrc && (
+        <div className="fixed inset-0 bg-black/90 z-[60] flex flex-col">
+          <div className="flex-1 relative">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+          <div className="bg-gray-900 p-6 space-y-4">
+            <div className="flex items-center gap-4">
+              <span className="text-white font-semibold">Масштаб:</span>
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="text-white font-mono">{zoom.toFixed(1)}x</span>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCropCancel}
+                className="flex-1 px-6 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 font-semibold transition-all"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleCropSave}
+                className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 font-semibold transition-all"
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300" onClick={onClose} />
       
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
