@@ -34,7 +34,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
     }
   };
 
-  const quickReactions = ['👍', '❤️', '😂', '😮', '😢'];
+  const quickReactions = ['👍', '❤️', '😂', '🔥', '👏'];
 
   return (
     <div className="flex items-center gap-1">

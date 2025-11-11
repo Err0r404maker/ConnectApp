@@ -37,7 +37,7 @@ interface QuickReactionsProps {
 }
 
 export const QuickReactions: React.FC<QuickReactionsProps> = ({ onReact }) => {
-  const reactions = ['👍', '❤️', '😂', '😮', '😢', '🔥', '👏', '🎉'];
+  const reactions = ['👍', '❤️', '😂', '🔥', '👏', '🎉', '😍', '👌'];
 
   return (
     <div className="flex items-center gap-1 p-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
