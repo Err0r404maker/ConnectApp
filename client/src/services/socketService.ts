@@ -70,16 +70,22 @@ class SocketService {
   }
 
   sendMessage(data: { chatId: string; content: string; type?: string; replyToId?: string; fileUrl?: string; fileName?: string; fileSize?: number }) {
+    console.log('🔍 sendMessage called with:', data);
+    console.log('🔌 Socket connected:', this.socket?.connected);
+    
     if (!this.socket?.connected) {
       console.error('❌ Socket not connected');
       return false;
     }
     
-    // Валидация данных
-    if (!data.chatId || !data.content || 
-        typeof data.chatId !== 'string' || 
-        typeof data.content !== 'string') {
-      console.error('❌ Недействительные данные сообщения');
+    // Валидация данных - content может быть пустым для файлов
+    if (!data.chatId || typeof data.chatId !== 'string') {
+      console.error('❌ Недействительный chatId');
+      return false;
+    }
+    
+    if (typeof data.content !== 'string') {
+      console.error('❌ Недействительный content');
       return false;
     }
     
