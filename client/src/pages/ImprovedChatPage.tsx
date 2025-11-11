@@ -494,14 +494,19 @@ const ImprovedChatPage: React.FC = memo(() => {
     }
   }, [activeChat, accessToken, replyTo]);
 
-  // Объявляем currentMessages ДО использования в других функциях
-  const currentMessages = activeChat ? messages[activeChat] || [] : [];
-  const filteredMessages = searchQuery 
-    ? currentMessages.filter(msg => 
-        msg.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        `${msg.firstName} ${msg.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : currentMessages;
+  // Объявляем currentMessages ДО использования в других функциях - используем useMemo для автообновления
+  const currentMessages = React.useMemo(() => {
+    return activeChat ? messages[activeChat] || [] : [];
+  }, [activeChat, messages]);
+  
+  const filteredMessages = React.useMemo(() => {
+    if (!searchQuery) return currentMessages;
+    return currentMessages.filter(msg => 
+      msg.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      `${msg.firstName} ${msg.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [currentMessages, searchQuery]);
+  
   const currentChatName = chats.find(c => c.id === activeChat)?.name || 'Select chat';
 
   // Обновляем результаты поиска
