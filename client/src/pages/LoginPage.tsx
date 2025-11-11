@@ -69,8 +69,8 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setEmail('admin@admin.com');
-                    setPassword('123456');
+                    setEmail('admin');
+                    setPassword('admin');
                   }}
                   className="px-3 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:shadow-md bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300"
                 >
@@ -79,8 +79,8 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setEmail('demo@demo.com');
-                    setPassword('demo123');
+                    setEmail('demo');
+                    setPassword('demo');
                   }}
                   className="px-3 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:shadow-md bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300"
                 >
