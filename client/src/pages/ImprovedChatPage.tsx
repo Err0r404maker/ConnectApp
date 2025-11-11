@@ -224,7 +224,13 @@ const ImprovedChatPage: React.FC = memo(() => {
     const socket = socketService.connect(accessToken);
     if (socket) {
       setIsConnected(true);
-      socketService.onNewMessage((message) => {
+      
+      // Удаляем старый обработчик если есть
+      socket.off('message:new');
+      
+      // Добавляем новый обработчик
+      socket.on('message:new', (message) => {
+        console.log('📨 Received message:new', message);
         addMessage(message.chatId, {
           id: message.id || Date.now().toString(),
           content: message.content,
@@ -232,7 +238,7 @@ const ImprovedChatPage: React.FC = memo(() => {
           sender: message.sender,
           firstName: message.sender?.firstName || '',
           lastName: message.sender?.lastName || '',
-          avatar: message.sender?.avatar,
+          avatar: message.sender?.avatar || message.senderAvatar,
           createdAt: message.createdAt,
           type: message.type || 'TEXT',
           fileUrl: message.fileUrl,
