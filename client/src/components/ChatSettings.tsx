@@ -241,17 +241,14 @@ const ChatSettings: React.FC<ChatSettingsProps> = ({
           component: (
             <div className="space-y-3">
               <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">@</span>
-                  <input
-                    type="text"
-                    value={newMemberId}
-                    onChange={(e) => setNewMemberId(e.target.value.replace('@', ''))}
-                    className="input-elegant pl-8"
-                    placeholder="username"
-                    disabled={isSubmitting}
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={newMemberId}
+                  onChange={(e) => setNewMemberId(e.target.value.replace('@', ''))}
+                  className="input-elegant flex-1"
+                  placeholder="username (без @)"
+                  disabled={isSubmitting}
+                />
                 <button
                   onClick={async () => {
                     if (!newMemberId.trim()) return;
