@@ -21,7 +21,7 @@ export const MessageReactions = ({ reactions, onToggleReaction }: MessageReactio
           className="px-2 py-0.5 rounded-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-xs flex items-center gap-1 transition-colors"
         >
           <span>{emoji}</span>
-          <span className="text-blue-600 dark:text-blue-400 font-semibold">{count}</span>
+          <span className="text-blue-600 dark:text-blue-400 font-semibold">{String(count)}</span>
         </button>
       ))}
     </div>

@@ -196,6 +196,7 @@ export const VirtualizedMessageList = memo<VirtualizedMessageListProps>(({
   return (
     <List
       height={height}
+      width="100%"
       itemCount={messages.length}
       itemSize={120}
       itemData={itemData}

@@ -11,6 +11,7 @@ export interface User {
   lastSeen?: string;
   createdAt?: string;
   updatedAt?: string;
+  settings?: any;
 }
 
 export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
@@ -65,6 +66,10 @@ export interface Message {
   sender?: any;
   replyTo?: any;
   status?: string;
+  reactions?: Record<string, number>;
+  isRead?: boolean;
+  readCount?: number;
+  totalMembers?: number;
 }
 
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE';

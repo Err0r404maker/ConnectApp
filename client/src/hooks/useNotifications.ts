@@ -24,14 +24,13 @@ export const useNotifications = () => {
     }
   };
 
-  const showNotification = (title: string, options?: NotificationOptions) => {
+  const showNotification = (title: string, body?: string) => {
     if (permission !== 'granted') return;
 
     const defaultOptions: NotificationOptions = {
+      body,
       icon: '/icon-192x192.png',
-      badge: '/badge-72x72.png',
-      vibrate: [100, 50, 100],
-      ...options
+      badge: '/badge-72x72.png'
     };
 
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
