@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
+import { useAudioPlayerStore } from '../store/audioPlayerStore';
 import { soundManager } from '../utils/sounds';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
@@ -13,6 +14,7 @@ interface Props {
 export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
   const { user, accessToken } = useAuthStore();
   const settings = useSettingsStore();
+  const { setTrack } = useAudioPlayerStore();
   const [activeTab, setActiveTab] = useState<'profile' | 'interface' | 'audio'>('profile');
   
   const [firstName, setFirstName] = useState(user?.firstName || '');
@@ -584,6 +586,15 @@ export const EnhancedProfileSettings = ({ isOpen, onClose }: Props) => {
                             </p>
                           </div>
                           <div className="flex gap-2">
+                            <button
+                              onClick={() => setTrack({ url: audio.fileUrl, name: audio.fileName || 'Аудио' })}
+                              className="p-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                              title="Воспроизвести"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </button>
                             <a
                               href={audio.fileUrl}
                               download={audio.fileName}

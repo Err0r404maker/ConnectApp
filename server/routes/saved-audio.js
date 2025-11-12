@@ -3,18 +3,22 @@ import { authenticateToken } from '../middleware/auth.js';
 import { getDb } from '../database.js';
 
 const router = express.Router();
-const db = getDb();
 
 // Получить все сохраненные аудио пользователя
 router.get('/', authenticateToken, async (req, res) => {
   try {
+    const db = getDb();
     const savedAudio = await db.allAsync(
-      `SELECT sa.*, m.fileUrl, m.fileName, m.createdAt as messageCreatedAt
+      `SELECT sa.*, 
+              COALESCE(m.fileUrl, im.imageData) as fileUrl, 
+              COALESCE(m.fileName, im.fileName) as fileName, 
+              COALESCE(m.createdAt, im.createdAt) as messageCreatedAt
        FROM saved_audio sa
-       JOIN messages m ON sa.messageId = m.id
+       LEFT JOIN messages m ON sa.messageId = m.id
+       LEFT JOIN image_messages im ON sa.messageId = im.id
        WHERE sa.userId = ?
        ORDER BY sa.savedAt DESC`,
-      [req.user.userId]
+      [req.user.id]
     );
     res.json(savedAudio);
   } catch (error) {
@@ -28,11 +32,20 @@ router.post('/', authenticateToken, async (req, res) => {
   const { messageId } = req.body;
   
   try {
-    // Проверяем, что сообщение существует и это аудио файл
-    const message = await db.getAsync(
+    const db = getDb();
+    // Проверяем в messages
+    let message = await db.getAsync(
       'SELECT * FROM messages WHERE id = ? AND (type = "FILE" OR type = "VOICE")',
       [messageId]
     );
+    
+    // Если не найдено, проверяем image_messages
+    if (!message) {
+      message = await db.getAsync(
+        'SELECT * FROM image_messages WHERE id = ? AND (fileName LIKE "%.mp3" OR fileName LIKE "%.wav" OR fileName LIKE "%.ogg")',
+        [messageId]
+      );
+    }
     
     if (!message) {
       return res.status(404).json({ error: 'Audio message not found' });
@@ -41,17 +54,19 @@ router.post('/', authenticateToken, async (req, res) => {
     // Проверяем, не сохранено ли уже
     const existing = await db.getAsync(
       'SELECT * FROM saved_audio WHERE userId = ? AND messageId = ?',
-      [req.user.userId, messageId]
+      [req.user.id, messageId]
     );
     
     if (existing) {
       return res.status(400).json({ error: 'Already saved' });
     }
     
-    // Сохраняем
+    // Сохраняем с ID
+    const crypto = await import('crypto');
+    const savedId = crypto.randomUUID();
     await db.runAsync(
-      'INSERT INTO saved_audio (userId, messageId, savedAt) VALUES (?, ?, ?)',
-      [req.user.userId, messageId, new Date().toISOString()]
+      'INSERT INTO saved_audio (id, userId, messageId, savedAt) VALUES (?, ?, ?, ?)',
+      [savedId, req.user.id, messageId, new Date().toISOString()]
     );
     
     res.json({ success: true, message: 'Audio saved' });
@@ -64,9 +79,10 @@ router.post('/', authenticateToken, async (req, res) => {
 // Удалить сохраненное аудио
 router.delete('/:messageId', authenticateToken, async (req, res) => {
   try {
+    const db = getDb();
     await db.runAsync(
       'DELETE FROM saved_audio WHERE userId = ? AND messageId = ?',
-      [req.user.userId, req.params.messageId]
+      [req.user.id, req.params.messageId]
     );
     res.json({ success: true });
   } catch (error) {

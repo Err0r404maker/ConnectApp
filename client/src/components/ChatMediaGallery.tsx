@@ -37,9 +37,9 @@ export const ChatMediaGallery = ({ chatId, isOpen, onClose, messages = [] }: Pro
 
   if (!isOpen) return null;
 
-  // Фильтрация по типу и chatId
-  const images = messages.filter(m => m.type === 'IMAGE' && m.chatId === chatId);
-  const files = messages.filter(m => m.type === 'FILE' && m.chatId === chatId);
+  // Фильтрация по типу (chatId уже отфильтрован в messages)
+  const images = messages.filter(m => m.type === 'IMAGE');
+  const files = messages.filter(m => m.type === 'FILE');
 
   const items = tab === 'images' ? images : files;
 

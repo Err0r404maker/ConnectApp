@@ -156,8 +156,6 @@ const MessageItem = memo<MessageItemProps>(({ index, style, data }) => {
           onDelete={() => { onDeleteMessage(message.id); setContextMenu(null); }}
         />
       )}
-        </div>
-      </div>
     </div>
   );
 });

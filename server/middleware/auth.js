@@ -41,8 +41,8 @@ export const authenticateToken = async (req, res, next) => {
   
   const token = authHeader.split(' ')[1];
   
-  // Более строгая валидация токена
-  if (!token || token.length < 20 || !/^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$/.test(token)) {
+  // Базовая валидация токена
+  if (!token || token.length < 10) {
     return res.status(401).json({ error: 'Недействительный формат токена' });
   }
 
@@ -97,13 +97,8 @@ export const authenticateSocket = async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
     
-    if (!token || typeof token !== 'string' || token.length < 20) {
+    if (!token || typeof token !== 'string' || token.length < 10) {
       return next(new Error('Недействительный токен'));
-    }
-
-    // Проверяем формат JWT токена
-    if (!/^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$/.test(token)) {
-      return next(new Error('Недействительный формат токена'));
     }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET, {

@@ -49,7 +49,7 @@ router.post('/', authenticateToken, async (req, res) => {
     console.log('Файл сохранен в базу');
     
     const isImage = imageData.startsWith('data:image/');
-    const isVoice = type === 'VOICE' || imageData.startsWith('data:audio/');
+    const isVoice = type === 'VOICE' || (imageData.startsWith('data:audio/') && fileName?.includes('voice-message'));
     
     // Загружаем данные об ответе
     let replyTo = null;
@@ -92,6 +92,12 @@ router.post('/', authenticateToken, async (req, res) => {
       firstName: user?.firstName,
       lastName: user?.lastName,
       avatar: user?.avatar,
+      sender: {
+        id: userId,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        avatar: user?.avatar
+      },
       chatId,
       fileName,
       replyToId: replyToId || null,
@@ -124,7 +130,10 @@ router.get('/:chatId', authenticateToken, async (req, res) => {
       
       const formattedFiles = await Promise.all(files.map(async (file) => {
         const isImage = file.imageData?.startsWith('data:image/');
-        const isVoice = file.imageData?.startsWith('data:audio/');
+        const isVoice = file.imageData?.startsWith('data:audio/') && (file.fileName?.includes('voice-message') || file.fileName?.endsWith('.webm'));
+        
+        // Загружаем данные пользователя
+        const sender = await db.getAsync('SELECT firstName, lastName, avatar FROM users WHERE id = ?', [file.senderId]);
         
         // Загружаем реакции
         const reactions = await db.allAsync(`
@@ -170,8 +179,15 @@ router.get('/:chatId', authenticateToken, async (req, res) => {
           content: isVoice ? '🎤 Голосовое сообщение' : (isImage ? file.imageData : file.fileName),
           fileUrl: file.imageData,
           senderId: file.senderId,
-          firstName: file.senderName?.split(' ')[0] || '',
-          lastName: file.senderName?.split(' ')[1] || '',
+          firstName: sender?.firstName || file.senderName?.split(' ')[0] || '',
+          lastName: sender?.lastName || file.senderName?.split(' ')[1] || '',
+          avatar: sender?.avatar,
+          sender: {
+            id: file.senderId,
+            firstName: sender?.firstName || file.senderName?.split(' ')[0] || '',
+            lastName: sender?.lastName || file.senderName?.split(' ')[1] || '',
+            avatar: sender?.avatar
+          },
           fileName: file.fileName,
           replyToId: file.replyToId,
           replyTo,

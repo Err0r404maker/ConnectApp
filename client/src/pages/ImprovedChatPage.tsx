@@ -26,6 +26,8 @@ import CreateChatModal from '../components/CreateChatModal';
 import { soundManager } from '../utils/sounds';
 import { ImageMessage } from '../components/ImageMessage';
 import { VoiceMessage } from '../components/VoiceMessage';
+import { AudioPlayer } from '../components/AudioPlayer';
+import { useAudioPlayerStore } from '../store/audioPlayerStore';
 
 const ImprovedChatPage: React.FC = memo(() => {
   const { user, logout, accessToken } = useAuthStore();
@@ -56,6 +58,7 @@ const ImprovedChatPage: React.FC = memo(() => {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const { setTrack } = useAudioPlayerStore();
 
   useEffect(() => {
     requestPermission();
@@ -108,9 +111,16 @@ const ImprovedChatPage: React.FC = memo(() => {
       }
       
       // Загружаем файлы/изображения
-      const imagesResponse = await fetch(`${API_URL}/images/${chatId}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      let imagesResponse;
+      try {
+        imagesResponse = await fetch(`${API_URL}/images/${chatId}`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        console.log('📸 Images API response status:', imagesResponse.status);
+      } catch (error) {
+        console.error('❌ Ошибка загрузки изображений:', error);
+        imagesResponse = { ok: false };
+      }
       
       // Загружаем детальные статусы прочтения
       const readStatusResponse = await fetch(`${API_URL}/message-reads/status/${chatId}`, {
@@ -156,6 +166,7 @@ const ImprovedChatPage: React.FC = memo(() => {
       
       if (imagesResponse.ok) {
         const imageMessages = await imagesResponse.json();
+        console.log('📸 Loaded images:', imageMessages.length);
         const enrichedImages = imageMessages.map((img: any) => ({
           ...img,
           isRead: readStatus[img.id]?.isRead || false,
@@ -169,7 +180,10 @@ const ImprovedChatPage: React.FC = memo(() => {
             avatar: img.avatar
           }
         }));
+        console.log('📸 Enriched images:', enrichedImages.length);
         allMessages = [...allMessages, ...enrichedImages];
+      } else {
+        console.error('❌ Images API failed:', imagesResponse.status);
       }
       
       // Сортируем по времени
@@ -786,36 +800,51 @@ const ImprovedChatPage: React.FC = memo(() => {
                               </div>
                             </div>
                             {(msg.fileName?.endsWith('.mp3') || msg.fileName?.endsWith('.wav') || msg.fileName?.endsWith('.ogg')) && (
-                              <button
-                                onClick={async (e) => {
-                                  e.stopPropagation();
-                                  try {
-                                    const response = await fetch('http://localhost:3001/api/saved-audio', {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        Authorization: `Bearer ${accessToken}`
-                                      },
-                                      body: JSON.stringify({ messageId: msg.id })
-                                    });
-                                    if (response.ok) {
-                                      showNotification('Успех', 'Аудио сохранено');
-                                    } else {
-                                      const error = await response.json();
-                                      showNotification('Ошибка', error.error || 'Не удалось сохранить');
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setTrack({ url: msg.fileUrl || '', name: msg.fileName || 'Аудио' });
+                                  }}
+                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  Воспроизвести
+                                </button>
+                                <button
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    try {
+                                      const response = await fetch('http://localhost:3001/api/saved-audio', {
+                                        method: 'POST',
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                          Authorization: `Bearer ${accessToken}`
+                                        },
+                                        body: JSON.stringify({ messageId: msg.id })
+                                      });
+                                      if (response.ok) {
+                                        showNotification('Успех', 'Аудио сохранено');
+                                      } else {
+                                        const error = await response.json();
+                                        showNotification('Ошибка', error.error || 'Не удалось сохранить');
+                                      }
+                                    } catch (error) {
+                                      console.error('Error saving audio:', error);
+                                      showNotification('Ошибка', 'Не удалось сохранить');
                                     }
-                                  } catch (error) {
-                                    console.error('Error saving audio:', error);
-                                    showNotification('Ошибка', 'Не удалось сохранить');
-                                  }
-                                }}
-                                className="w-full px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-medium flex items-center justify-center gap-2"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                </svg>
-                                Сохранить аудио
-                              </button>
+                                  }}
+                                  className="flex-1 px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                  </svg>
+                                  Сохранить
+                                </button>
+                              </div>
                             )}
                           </div>
                         ) : (
@@ -1282,6 +1311,8 @@ const ImprovedChatPage: React.FC = memo(() => {
           messages={currentMessages}
         />
       )}
+
+      <AudioPlayer />
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (

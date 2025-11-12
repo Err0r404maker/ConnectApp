@@ -143,7 +143,6 @@ app.use('/api/users', createUserRoutes(io));
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/images', createImageRoutes(io));
-app.use('/api/simple-images', createImageRoutes(io));
 app.use('/api/invites', inviteRoutes);
 app.use('/api/chat-invites', chatInviteRoutes);
 app.use('/api/friends', createFriendsRoutes(io));

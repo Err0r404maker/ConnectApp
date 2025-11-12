@@ -23,16 +23,17 @@ class SocketService {
     }
 
     try {
-      const serverUrl = (import.meta.env.VITE_WS_URL as string) || 'http://localhost:3001';
+      const serverUrl = 'http://localhost:3001';
 
       this.socket = io(serverUrl, {
         auth: { token },
-        transports: ['websocket', 'polling'],
-        timeout: 10000,
-        forceNew: true,
+        transports: ['polling', 'websocket'],
+        timeout: 20000,
+        forceNew: false,
         reconnection: true,
         reconnectionAttempts: this.maxReconnectAttempts,
-        reconnectionDelay: 1000
+        reconnectionDelay: 2000,
+        upgrade: true
       });
 
       this.socket.on('connect', () => {
@@ -127,7 +128,7 @@ class SocketService {
   }
 
   private isValidJWT(token: string): boolean {
-    if (!token || typeof token !== 'string' || token.length < 20) {
+    if (!token || typeof token !== 'string' || token.length < 10) {
       return false;
     }
     
@@ -136,9 +137,7 @@ class SocketService {
       return false;
     }
     
-    // Проверяем что каждая часть является валидным base64url
-    const base64UrlRegex = /^[A-Za-z0-9_-]+$/;
-    return parts.every(part => part.length > 0 && base64UrlRegex.test(part));
+    return true;
   }
 
   get connected(): boolean {
